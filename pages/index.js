@@ -125,7 +125,8 @@ const changeRepoStar = (repositoryId, viewerHasStarred, token) => {
 }
 
 export default function Home() {
-  const [token, setToken] = useState('');
+  const [token, setToken] = useState('')
+  const [tokenError, setTokkenError] = useState(false)
   const [path, setPath] = useState('the-road-to-learn-react/the-road-to-learn-react')
   const [organization, setOrganization] = useState(null)
   const [errors, setErrors] = useState(null)
@@ -191,8 +192,12 @@ export default function Home() {
             setStarred(result.data.data.organization.repository.viewerHasStarred)
             setStarCount(result.data.data.organization.repository.stargazers.totalCount)
           }
+          setTokkenError(false)
           setErrors(result.data.errors)
         }
+      })
+      .catch(err => {
+        setTokkenError(true)
       })
   }
 
@@ -219,20 +224,15 @@ export default function Home() {
       })
   }
 
-  if(!organization){
-    console.log('not initialized')
+  if(!organization || tokenError){
     return (
-      <FormDialog token={token} setToken={setToken} startFetch={()=>{onFetchFromGitHub(path)}} />
+      <FormDialog token={token} setToken={setToken} startFetch={()=>{onFetchFromGitHub(path)}} tokenError={tokenError} />
     )
   }
 //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
 
   return (
     <div className="container">
-      <Head>
-        <title>GraphQl Github Practice</title>
-        <link rel="icon" href="/graphql.ico" />
-      </Head>
 
       <main>
         <h1 className="title">

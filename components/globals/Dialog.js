@@ -7,7 +7,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
-export default function FormDialog({token, setToken, startFetch}) {
+export default function FormDialog({token, setToken, tokenError, startFetch}) {
   return (
     <div>
       <Dialog open={true}>
@@ -20,7 +20,7 @@ export default function FormDialog({token, setToken, startFetch}) {
             autoFocus
             margin="dense"
             id="pat"
-            label="Your PAT"
+            label={`${tokenError?"PAT error! Gimme your real PAT":"Gimme PAT"}`}
             type="text"
             fullWidth
             variant="standard"
