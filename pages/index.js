@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios';
-import {Box, Button, Container, TextField, Typography} from '@mui/material/';
+import {Box, Button, Card, CardContent, Container, Divider, Grid, List, ListItem, TextField, Typography} from '@mui/material/';
+import { Star, StarBorder } from '@mui/icons-material';
 import FormDialog from '../components/globals/Dialog';
+import Footer from '../components/globals/Footer';
 
 const axiosGitHubGraphQL = (token) => {
   return axios.create({
@@ -157,25 +159,21 @@ export default function Home() {
 //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
 
   return (
-    <Container maxWidt="sm">
-
-      <main>
-        <Typography variant="h3" component="div" gutterBottom>
+    <Container maxWidth="sm"> 
+        <Typography variant="h3" component="div" gutterBottom style={{textAlign:"center"}}>
           Practice Graphql with GitHub API
         </Typography>
-        <Box component="form" onSubmit={onSubmit}
-          style={{display:"flex", justifyContent:"center", alignItems:"center"}}
-        >
+        <Box component="form" sx={{ display:"flex", justifyContent:"center", alignItems:"center", margin:"5px auto" }} onSubmit={onSubmit}>
           <TextField
             id="url"
             type="text"
             label="Show open issues for https://github.com"
             value={path}
             onChange={onChange}
-          />
-          <Button style={{marginLeft:"5px"}} variant="contained" type="submit">Search</Button>
+            />
+          <Button sx={{marginLeft:"5px"}} variant="contained" type="submit">Search</Button>
         </Box>
-        <hr />
+        <Divider />
         {
           organization?
           <Organization 
@@ -187,20 +185,11 @@ export default function Home() {
             starred={starred}
             starCount={starCount}
           />:
-          <h3>No info yet....</h3>
+          <Typography variant="h4" component="div">No info yet....</Typography>
         }
-      </main>
+      
 
-      <footer>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel" className="logo" />
-        </a>
-      </footer>
+      <Footer />
     </Container>
   )
 }
@@ -208,23 +197,21 @@ export default function Home() {
 const Organization = ({organization:{name, url, repository}, errors, onFetchMoreIssues, hasNextPage, onStarRepository, starred, starCount}) => {
   if (errors) {
     return (
-    <p>
-    <strong>Something went wrong:</strong>
-      {
-        errors.map(error => error.message).join(' ')
-      }
-    </p>
+      <Typography variant="subtitle2" gutterBottom component="div">
+        <strong>Something went wrong:</strong>
+        {
+          errors.map(error => error.message).join(' ')
+        }
+      </Typography>
     );
   }
-
-  //console.log(repository)
   return (
-    <div>
-      <p>
+    <Box>
+      <Typography variant="subtitle1" gutterBottom component="div">
         <strong>
-          Issues from organization <a href={url}>{name}</a>
+          Issues from organization <a href={url} target="_blank">{name}</a>
         </strong>
-      </p>
+      </Typography>
       <Repository 
         repository={repository} 
         onFetchMoreIssues={onFetchMoreIssues} 
@@ -233,108 +220,85 @@ const Organization = ({organization:{name, url, repository}, errors, onFetchMore
         starred={starred}
         starCount={starCount}
       />
-    </div>
+    </Box>
   )
 }
 
-const Repository = ({ repository:{id, url, name, issues, viewerHasStarred}, onFetchMoreIssues, hasNextPage, onStarRepository, starred, starCount}) => {
-
-  useEffect(()=>{
-    console.log(starred)
-  }, [starred])
+const Repository = ({ repository:{id, url, name, issues}, onFetchMoreIssues, hasNextPage, onStarRepository, starred, starCount}) => {
 
   return(
-    <div>
-      <p>
+    <Box>
+       <Typography variant="subtitle1" gutterBottom component="div">
         <strong>In Repository </strong>
-        <a href={url}>{name}</a>
-      </p>
+        <a href={url} target="_blank">{name}</a>
+      </Typography>
       {
         issues &&
         <>
-        <ul>
+        <List>
           {
             issues.edges.map((issue) => {
               //console.log(issue)
               return (          
-                <li key={issue.node.id}>
-                  <a href={issue.node.url}>{issue.node.title}</a>
-                  <IssueReactions reactions={issue.node.reactions} />
-                </li>
+                <ListItem disablePadding key={issue.node.id}>
+                  <Card sx={{width:"100%"}}>
+                    <CardContent>
+                      <a href={issue.node.url} target="_blank">
+                        <Typography variant="h6" gutterBottom component="div">
+                          {issue.node.title}
+                        </Typography>
+                      </a>
+                      <IssueReactions reactions={issue.node.reactions} />
+                    </CardContent>                                
+                  </Card>            
+                </ListItem>
                                                 
               )
             })
           }
-        </ul>
-        <hr />
-        <button onClick={onFetchMoreIssues} disabled={!hasNextPage}>Next 5 issues</button>
-        <button onClick={()=>{
-                          onStarRepository(id, starred)
-                        }}
-        >
-          {starred?'Unstar':'Star'}
-        </button>
-        <span>{starCount} stars</span>
+        </List>
+        <Divider />
+          <Button variant="outlined" onClick={onFetchMoreIssues}>{hasNextPage?"Next 5 issues":"First 5 issues"}</Button>
+          <Button variant="outlined" 
+                  startIcon={starred?<Star />:<StarBorder />}
+                  onClick={()=>{
+                            onStarRepository(id, starred)
+                          }}
+          >
+            {starred?'Unstar':'Star'}
+          </Button>
+          <span style={{marginLeft:"5px"}}>{starCount} stars</span>
         </>
       }
-    </div>
+    </Box>
   )
 }
 
 const IssueReactions = ({reactions:{edges}}) => {
   //console.log(edges)
   if(edges.length === 0) {
-    return <></>
+    return (
+      <Typography variant="overline" gutterBottom>
+        No Reaction....
+      </Typography>
+    )
   }
 
   return (
     <>
-      <p>Reactions</p>
-      <ul>
+      <Typography variant="overline" gutterBottom>
+        Last 3 Reactions
+      </Typography>
+      <List>
         {
           edges.map(edge => {
             return (
-              <li key={edge.node.id}>{edge.node.content}</li>
+              <ListItem key={edge.node.id}>{edge.node.content}</ListItem>
             )
           })
         }
-      </ul>
+      </List>
     </>
 
   )
 }
-
-/*
-<p className="description">
-          Get started by editing <code>pages/index.js</code>
-        </p>
-
-        <div className="grid">
-          <a href="https://nextjs.org/docs" className="card">
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className="card">
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className="card"
-          >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className="card"
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>*/

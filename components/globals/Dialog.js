@@ -14,7 +14,7 @@ export default function FormDialog({token, setToken, tokenError, startFetch}) {
         <DialogTitle>Github PAT</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            To use this app, please enter your GitHub Personal Access Token
+            To use this app, please login to GitHub and enter your GitHub Personal Access Token
           </DialogContentText>
           <TextField
             autoFocus
