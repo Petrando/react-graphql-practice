@@ -12,9 +12,6 @@ const theme = createTheme({
       largeScreen:1440,//1440 theme.breakpoints.up is (INCLUSIVE)
     },
   },
-  color:'#FFFFFF',
-  backgroundColor:'#121212',
-  padding:0,
   margin:0
 })
 

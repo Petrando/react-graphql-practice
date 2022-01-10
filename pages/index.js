@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
-import Head from 'next/head'
 import axios from 'axios';
+import {Box, Button, Container, TextField, Typography} from '@mui/material/';
 import FormDialog from '../components/globals/Dialog';
 
 const axiosGitHubGraphQL = (token) => {
@@ -12,51 +12,7 @@ const axiosGitHubGraphQL = (token) => {
   })
 }
 
-const GET_ORGANIZATION = `
-  {
-    organization(login: "the-road-to-learn-react") {
-      name
-      url
-    }
-  }
-`
-
-const GET_REPOSITORY_OF_ORGANIZATION = `
-  {
-    organization(login: "the-road-to-learn-react") {
-      name
-      url
-      repository(name: "the-road-to-learn-react") {
-        name
-        url
-      }
-    }
-  }
-`
-/*
-const GET_ISSUES_OF_REPOSITORY = `
-  {
-    organization(login: "the-road-to-learn-react") {
-      name
-      url
-      repository(name: "the-road-to-learn-react") {
-        name
-        url
-        issues(last: 5) {
-          edges {
-            node {
-              id
-              title
-              url
-            }
-          }
-        }
-      }
-    }
-  }
-`*/
-
-const GET_ISSUES_OF_REPOSITORY = `
+const GET_REPOSITORY_AND_ISSUES = `
   query($organization: String!, $repository: String!, $cursor: String) {
     organization(login: $organization) {
       name
@@ -133,10 +89,6 @@ export default function Home() {
   const [starred, setStarred] = useState(false)
   const [starCount, setStarCount] = useState(0)
 
-  useEffect(()=>{
-    //onFetchFromGitHub(path)
-  }, [])
-
   const onSubmit = (e) => {
     e.preventDefault()
     onFetchFromGitHub(path)    
@@ -146,39 +98,12 @@ export default function Home() {
     setPath(e.target.value)
   }
 
-  const getIssuesOfRepositoryQuery = (org, repository) => {
-    return (
-      `
-        {
-          organization(login: "${organization}"){
-            name
-            url
-            repository(name: "${repository}") {
-              name
-              url
-              issues(last: 5) {
-                edges {
-                  node {
-                    id
-                    title
-                    url
-                  }
-                }
-              }
-            }
-          }
-        }
-      `
-    )
-  }
-  
   const getIssuesOfRepository = (path, cursor) => {
     const [organization, repository] = path.split('/')
 
     return (
       axiosGitHubGraphQL(token)
-        //.post('', { query: getIssuesOfRepositoryQuery(organization, repository)})
-        .post('', { query:GET_ISSUES_OF_REPOSITORY, variables: {organization, repository, cursor}})
+        .post('', { query:GET_REPOSITORY_AND_ISSUES, variables: {organization, repository, cursor}})
     )
   } 
 
@@ -232,25 +157,24 @@ export default function Home() {
 //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
 
   return (
-    <div className="container">
+    <Container maxWidt="sm">
 
       <main>
-        <h1 className="title">
-          Practice Graphql <a href="https://nextjs.org">Next.js!</a>
-        </h1>
-        <form onSubmit={onSubmit}>
-          <label htmlFor="url">
-            Show open issues for https://github.com
-          </label>
-          <input
+        <Typography variant="h3" component="div" gutterBottom>
+          Practice Graphql with GitHub API
+        </Typography>
+        <Box component="form" onSubmit={onSubmit}
+          style={{display:"flex", justifyContent:"center", alignItems:"center"}}
+        >
+          <TextField
             id="url"
             type="text"
+            label="Show open issues for https://github.com"
             value={path}
             onChange={onChange}
-            style={{width:"300px"}}
           />
-          <button type="submit">Search</button>
-        </form>
+          <Button style={{marginLeft:"5px"}} variant="contained" type="submit">Search</Button>
+        </Box>
         <hr />
         {
           organization?
@@ -277,153 +201,7 @@ export default function Home() {
           <img src="/vercel.svg" alt="Vercel" className="logo" />
         </a>
       </footer>
-
-      <style jsx>{`
-        .container {
-          min-height: 100vh;
-          padding: 0 0.5rem;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
-        }
-
-        main {
-          padding: 5rem 0;
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
-        }
-
-        footer {
-          width: 100%;
-          height: 100px;
-          border-top: 1px solid #eaeaea;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        }
-
-        footer img {
-          margin-left: 0.5rem;
-        }
-
-        footer a {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        }
-
-        a {
-          color: inherit;
-          text-decoration: none;
-        }
-
-        .title a {
-          color: #0070f3;
-          text-decoration: none;
-        }
-
-        .title a:hover,
-        .title a:focus,
-        .title a:active {
-          text-decoration: underline;
-        }
-
-        .title {
-          margin: 0;
-          line-height: 1.15;
-          font-size: 4rem;
-        }
-
-        .title,
-        .description {
-          text-align: center;
-        }
-
-        .description {
-          line-height: 1.5;
-          font-size: 1.5rem;
-        }
-
-        code {
-          background: #fafafa;
-          border-radius: 5px;
-          padding: 0.75rem;
-          font-size: 1.1rem;
-          font-family: Menlo, Monaco, Lucida Console, Liberation Mono,
-            DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace;
-        }
-
-        .grid {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          flex-wrap: wrap;
-
-          max-width: 800px;
-          margin-top: 3rem;
-        }
-
-        .card {
-          margin: 1rem;
-          flex-basis: 45%;
-          padding: 1.5rem;
-          text-align: left;
-          color: inherit;
-          text-decoration: none;
-          border: 1px solid #eaeaea;
-          border-radius: 10px;
-          transition: color 0.15s ease, border-color 0.15s ease;
-        }
-
-        .card:hover,
-        .card:focus,
-        .card:active {
-          color: #0070f3;
-          border-color: #0070f3;
-        }
-
-        .card h3 {
-          margin: 0 0 1rem 0;
-          font-size: 1.5rem;
-        }
-
-        .card p {
-          margin: 0;
-          font-size: 1.25rem;
-          line-height: 1.5;
-        }
-
-        .logo {
-          height: 1em;
-        }
-
-        @media (max-width: 600px) {
-          .grid {
-            width: 100%;
-            flex-direction: column;
-          }
-        }
-      `}</style>
-
-      <style jsx global>{`
-        html,
-        body {
-          padding: 0;
-          margin: 0;
-          font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto,
-            Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue,
-            sans-serif;
-        }
-
-        * {
-          box-sizing: border-box;
-        }
-      `}</style>
-    </div>
+    </Container>
   )
 }
 

@@ -8,71 +8,11 @@ body {
   min-height: -webkit-fill-available;
   font-family: Ubuntu, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
      Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
-  color: #FFFFFF;
-  background-color: #121212;
-}
-
-/*
-62,20588235294118
-63,31877729257642
-
-62.7
-*/
-
-.pageContentContainer{
-  margin-top: 0px;
-  padding:0px 18.65%;
-}
-
-.homeContainer {
-  margin-top: 0px;
-  padding:0px 10.13888888888889vw 0px 9.02777777777778vw;
-}
-
-.pageContent {
-  width: 100%;
-}
-
-.flexColumnStart {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: start;
-}
-
-.hidden {
-  display: none;
-}
-
-.notVisible {
-  opacity: 0;
-}
-
-.visible {
-  display: inline;
-}
-
-.hideLongWord {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 100%;
 }
 
 @media screen and (max-width:414px) {
-  .pageContentContainer {
-    padding:0px 20px;
-  }
+ 
 }
-.description {
-  color:#B2B2B2;
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
 * {
   box-sizing: border-box;
 }
