@@ -156,7 +156,6 @@ export default function Home() {
       <FormDialog token={token} setToken={setToken} startFetch={()=>{onFetchFromGitHub(path)}} tokenError={tokenError} />
     )
   }
-//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
 
   return (
     <Container maxWidth="sm"> 
